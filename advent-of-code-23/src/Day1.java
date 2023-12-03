@@ -1,33 +1,56 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Day1 {
     public static void main(String[] args) {
 
-        String exampleText = """
-                1abc2
-                pqr3stu8vwx
-                a1b2c3d4e5f
-                treb7uchet 
-                """;
+        Map<String, String> numbersOnString = new HashMap<>();
+
+        numbersOnString.put("one", "1");
+        numbersOnString.put("two", "2");
+        numbersOnString.put("three", "3");
+        numbersOnString.put("four", "4");
+        numbersOnString.put("five", "5");
+        numbersOnString.put("six", "6");
+        numbersOnString.put("seven", "7");
+        numbersOnString.put("eight", "8");
+        numbersOnString.put("nine", "9");
 
         try {
-            String currentDir = System.getProperty("user.dir");
-            BufferedReader br = new BufferedReader(new FileReader(currentDir + "/src/files/day1-input.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("src/input/day1.txt"));
             int totalValue = 0;
-            for (String lineFromText : br.lines().toList()) {
-                int firstDigit = -1;
+            for (String line : br.lines().toList()) {
+
+                int index = 10000;
+                while (index == 10000) {
+                    String first = "";
+                    for (Map.Entry<String, String> entry : numbersOnString.entrySet()) {
+                        int pos = line.indexOf(entry.getKey());
+                        if (pos != -1 && pos < index) {
+                            index = line.indexOf(entry.getKey());
+                            first = entry.getKey();
+                        }
+                    }
+                    index = -1;
+                    if (numbersOnString.containsKey(first)) {
+                        line = line.replaceFirst(first, numbersOnString.get(first));
+                        index = 10000;
+                    }
+                }
+                int first = -1;
                 int lastDigit = -1;
-                for (String s : lineFromText.split("")) {
+                for (String s : line.split("")) {
                     if (Character.isDigit(s.charAt(0))) {
-                        if (firstDigit == -1) {
-                            firstDigit = Integer.parseInt(s);
+                        if (first == -1) {
+                            first = Integer.parseInt(s);
                         }
                         lastDigit = Integer.parseInt(s);
                     }
                 }
-                firstDigit *= 10;
-                totalValue += firstDigit + lastDigit;
+                first *= 10;
+                totalValue += first + lastDigit;
             }
             System.out.println(totalValue);
         } catch (Exception e) {
